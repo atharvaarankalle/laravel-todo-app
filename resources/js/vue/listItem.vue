@@ -4,9 +4,9 @@
             <input 
                 type="checkbox"
                 @change="updateCheck()"
-                v-model="item.completed"
+                checked="{{ item.completed }}"
             />
-            <span :class="[item.completed ? 'completed' : '', 'itemText']">{{ item.name }}</span>
+            <span :class="[item.completed ? 'complete' : 'incomplete', 'itemText']">{{ item.name }}</span>
             <button @click="removeItem()" class="deleteButton">
                 <font-awesome-icon icon="trash" />
             </button>
@@ -15,13 +15,30 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-    props: ['item']
+    props: ['item'],
+    methods: {
+        updateCheck() {
+            axios.put('api/item/' + this.item.id, {
+                item: this.item
+            })
+            .then( response => {
+                if (response.status == 200) {
+                    this.$emit('itemChanged');
+                }
+            })
+            .catch( error => {
+                console.log(error);
+            })
+        }
+    }
 }
 </script>
 
 <style scoped>
-    .completed {
+    .complete {
         text-decoration: line-through;
         color: #999999;
     }
