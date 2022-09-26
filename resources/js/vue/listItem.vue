@@ -4,9 +4,9 @@
             <input 
                 type="checkbox"
                 @change="updateCheck()"
-                checked="{{ item.completed }}"
+                v-model="item.completed"
             />
-            <span :class="[item.completed ? 'complete' : 'incomplete', 'itemText']">{{ item.name }}</span>
+            <span :class="[item.completed ? 'complete' : '', 'itemText']">{{ item.name }}</span>
             <button @click="removeItem()" class="deleteButton">
                 <font-awesome-icon icon="trash" />
             </button>
@@ -24,6 +24,18 @@ export default {
             axios.put('api/item/' + this.item.id, {
                 item: this.item
             })
+            .then( response => {
+                if (response.status == 200) {
+                    this.$emit('itemChanged');
+                }
+            })
+            .catch( error => {
+                console.log(error);
+            })
+        },
+
+        removeItem() {
+            axios.delete('api/item/' + this.item.id)
             .then( response => {
                 if (response.status == 200) {
                     this.$emit('itemChanged');
